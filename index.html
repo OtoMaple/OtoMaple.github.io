@@ -161,11 +161,11 @@
 </nav>
       <div class="body-wrap">
   
-    <article id="post-test" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-ECDSA及加速方法介绍" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2023/04/14/test/" class="article-date">
-  	<time datetime="2023-04-14T07:42:30.000Z" itemprop="datePublished">2023-04-14</time>
+      <a href="/2023/04/14/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/" class="article-date">
+  	<time datetime="2023-04-14T07:53:18.705Z" itemprop="datePublished">2023-04-14</time>
 </a>
     </div>
   
@@ -174,90 +174,102 @@
       <input type="hidden" class="isFancy" />
     
     
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2023/04/14/test/">
-        test
-        
-      </a>
-    </h1>
-  
-
-      </header>
-      
-    
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="/../images/test/image-20230414154353038.png" alt="image-20230414154353038"></p>
+        <h1 id="ECDSA及加速方法介绍"><a href="#ECDSA及加速方法介绍" class="headerlink" title="ECDSA及加速方法介绍"></a>ECDSA及加速方法介绍</h1><h2 id="公钥密码学-Public-key-cryptography"><a href="#公钥密码学-Public-key-cryptography" class="headerlink" title="公钥密码学(Public-key cryptography)"></a>公钥密码学(Public-key cryptography)</h2><p><strong>公开密钥密码学</strong>也称<strong>非对称式密码学</strong>，是密码学的一种算法，它需要两个密钥，一个是公开密钥，另一个是私有密钥；公钥用作加密，私钥则用作解密。使用公钥把明文加密后所得的密文，只能用相对应的私钥才能解密并得到原本的明文。</p>
+<p>基于公开密钥加密的特性，它还能提供数字签名的功能，使电子文件可以得到如同在纸本文件上亲笔签署的效果。</p>
+<p>公钥密码学的两个最著名的应用是公钥加密和数字签名。</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AF%BC%E5%9B%BE.png" alt="公钥密码学导图"></p>
+<h2 id="公钥加密"><a href="#公钥加密" class="headerlink" title="公钥加密"></a>公钥加密</h2><p>公钥加密指的是由对应的一对唯一性密钥（即公开密钥和私有密钥）组成的加密方法。</p>
+<h3 id="常见算法"><a href="#常见算法" class="headerlink" title="常见算法"></a>常见算法</h3><p>RSA、ECC、Diffie-Helmlan、ElGamal等等</p>
+<h2 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h2><p>数字签名是一种功能类似写在纸上的普通签名、但是使用了公钥加密领域的技术，以用于鉴别数字信息的方法。<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/31477508">什么是数字签名？</a></p>
+<h3 id="数字签名算法-DSA"><a href="#数字签名算法-DSA" class="headerlink" title="数字签名算法(DSA)"></a>数字签名算法(DSA)</h3><p><em>RSA</em></p>
+<p>RSA是目前计算机密码学中最经典算法，也是目前为止使用最广泛的数字签名算法。RSA数字签名算法主要包括MD和SHA两种算法。</p>
+<p><em>DSA算法</em></p>
+<p>和RSA不同之处在于它不能用作加密和解密，也不能进行密钥交换，只用于签名，所以它比RSA要快很多，其安全性与RSA相比差不多。DSA的一个重要特点是两个素数公开，这样，当使用别人的p和q时，即使不知道私钥，你也能确认它们是否是随机产生的，还是作了手脚。RSA算法却做不到。</p>
+<p><em>ECDSA</em></p>
+<p>ECC与DSA的结合。相同密钥长度下，安全性能更高。计算量小，处理速度快，在私钥的处理速度上（解密和签名），ECC远 比RSA、DSA快得多。存储空间占用小，且带宽要求低。</p>
+<p><em>EdDSA</em></p>
+<p>在ECDSA上进行了优化，使用了爱德华曲线。签名过程中不需要唯一的随机数,能够避免随机数引发的安全问题。公钥和签名值都较小，计算更完备。</p>
+<p><u>上文主要介绍了一些密码学的常识，后面主要介绍论文Elliptic Curve Cryptography with Efficiently Computable Endomorphisms and Its Hardware Implementations for the Internet of Things中的内容，即ECDSA和涉及到的证书验证计算优化。</u></p>
+<h2 id="ECDSA-椭圆曲线数字签名算法"><a href="#ECDSA-椭圆曲线数字签名算法" class="headerlink" title="ECDSA(椭圆曲线数字签名算法)"></a>ECDSA(椭圆曲线数字签名算法)</h2><p>ECDSA(Elliptic Curve Digital Signature Algorithm)<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/97953640">中文介绍</a>&amp;<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm">wiki</a></p>
+<p>In cryptography, the <strong>Elliptic Curve Digital Signature Algorithm</strong> (<strong>ECDSA</strong>) offers a variant of the Digital Signature Algorithm (DSA) which uses elliptic curve cryptography.</p>
+<p>ECDSA使用椭圆曲线密码学进行数字签名。</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/ECDSA%E5%AF%BC%E5%9B%BE.png" alt="ECDSA导图"></p>
+<h3 id="ECDSA方程"><a href="#ECDSA方程" class="headerlink" title="ECDSA方程"></a>ECDSA方程</h3><p>Weierstrass曲线形式：<br>$$<br>E_s: y^2&#x3D;(x^3+ax+b)\mod\ p<br>$$<br>曲线关于X轴对称</p>
+<p>参数$a,b,p,N,G$</p>
+<p>$a,b,p$为曲线参数</p>
+<p>$N$为曲线上面点的个数</p>
+<p>$G$为曲线上一点</p>
+<h3 id="点的加法与乘法"><a href="#点的加法与乘法" class="headerlink" title="点的加法与乘法"></a>点的加法与乘法</h3><p>将一个点<img src="https://www.zhihu.com/equation?tex=P" alt="[公式]">和另外一个点<img src="https://www.zhihu.com/equation?tex=Q" alt="[公式]">相加将得到点<img src="https://www.zhihu.com/equation?tex=S" alt="[公式]">，如果我们从<img src="https://www.zhihu.com/equation?tex=P" alt="[公式]">到 <img src="https://www.zhihu.com/equation?tex=Q" alt="[公式]">画一条线，并延长与曲线相交于第三个点<img src="https://www.zhihu.com/equation?tex=R" alt="[公式]">，则<img src="https://www.zhihu.com/equation?tex=R" alt="[公式]">为 <img src="https://www.zhihu.com/equation?tex=S" alt="[公式]">的负值，别忘记曲线是关于<img src="https://www.zhihu.com/equation?tex=X" alt="[公式]">轴对称的。在这种情况下，我们定义<img src="https://www.zhihu.com/equation?tex=R=-S" alt="[公式]">来表示<img src="https://www.zhihu.com/equation?tex=R" alt="[公式]">在 <img src="https://www.zhihu.com/equation?tex=X" alt="[公式]">轴上面的对称点。具体可以看下面这张图。</p>
+<p>如果$P$和$Q$重合，做切线。</p>
+<img src="https://pic3.zhimg.com/80/v2-138690f3bfe2cac45e4974eae7b41062_720w.jpg" alt="img" style="zoom:75%;" />
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-      
-    
-  </div>
-  
-</article>
 
 
+<p>同样的机制，如果你进行<img src="https://www.zhihu.com/equation?tex=P+P" alt="[公式]">，其结果为经过<img src="https://www.zhihu.com/equation?tex=P" alt="[公式]">的切线与曲线的交点关于<img src="https://www.zhihu.com/equation?tex=X" alt="[公式]">轴的对称点，然后<img src="https://www.zhihu.com/equation?tex=P+P+P" alt="[公式]">可以看作是<img src="https://www.zhihu.com/equation?tex=P+P" alt="[公式]">点与 <img src="https://www.zhihu.com/equation?tex=P" alt="[公式]">点相加的结果。这就可以用来对椭圆曲线点乘法进行定义：<img src="https://www.zhihu.com/equation?tex=k+%5Ctimes+P" alt="[公式]">就是点<img src="https://www.zhihu.com/equation?tex=P" alt="[公式]">自身进行<img src="https://www.zhihu.com/equation?tex=k" alt="[公式]">次相加，以下图为例。</p>
+<img src="https://pic2.zhimg.com/80/v2-47dedc1e890d7c9832bd95b12c5e6fe5_720w.jpg" alt="img" style="zoom: 75%;" />
+
+<h3 id="私钥与公钥"><a href="#私钥与公钥" class="headerlink" title="私钥与公钥"></a>私钥与公钥</h3><p>私钥是一个随机数，公钥是将曲线上的点<img src="https://www.zhihu.com/equation?tex=G" alt="[公式]">与私钥相乘以后得到的曲线上的点。其中<img src="https://www.zhihu.com/equation?tex=G" alt="[公式]">是曲线上面的参考点。</p>
+<p>1.随机私钥$dA$</p>
+<p>2.公钥$Qa&#x3D;dA\times G$，一个点</p>
+<h3 id="生成签名"><a href="#生成签名" class="headerlink" title="生成签名"></a>生成签名</h3><p>1.产生随机数$k$</p>
+<p>2.计算$P&#x3D;k\times G$</p>
+<p>3.$R$为点$P$的$x$坐标</p>
+<p>4.整数$z&#x3D;HASH(message)$ 如SHA-1</p>
+<p>5.$S&#x3D;k^{-1}(z+dA\times R)\ mod\ p$, $k^{-1}$为$k$的模的乘法逆元</p>
+<p>签名内容$(R,S)$，两个数值</p>
+<h3 id="签名验证"><a href="#签名验证" class="headerlink" title="签名验证"></a>签名验证</h3><p>$P&#x3D;S^{-1}\times z\times G+S^{-1}\times R\times Qa$</p>
+<p>计算上述点$P$，若点$P$的$x$坐标与$R$相等，则签名有效</p>
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>需要同时知道随机数$k$和私钥$dA$才能够计算出$S$，但是需要$R$和公钥$Qa$来对签名进行确认和验证。并且由于以$R&#x3D;k\times G$及$Qa&#x3D;dA\times G$再加上离散对数问题的困难性，没有办法找到私钥，也就无法在不知道私钥的情况下伪造签名。</p>
+<p>有一个点$R&#x3D;k\times P$，知道$R$和$P$，但无法据此求出$k$。</p>
+<h2 id="文章关注问题"><a href="#文章关注问题" class="headerlink" title="文章关注问题"></a>文章关注问题</h2><p>ECDSA的一个重要问题是，验证过程非常耗时。</p>
+<p>在ECDSA签名验证时，需要计算一个双标量乘法——$k\cdot G+l\cdot Q$，其中$G$是椭圆$E$上一点，$G$生成了素数阶为$r$的组，$Q$是组中任意的一个元素，$k$和$l$是范围为$[1,r-1]$的两个整数。</p>
+<p>$k\cdot G+l\cdot Q$的计算会比较耗时，尤其对于那些资源受限的iot设备。本文研究了包含有效自同态的扭曲爱德华曲线上的计算，能够减少50%的点乘次数，以加速双标量乘法的运算。此外，本文还设计了实现该操作的两个硬件结构。一是0.13 mm CMOS ASIC中的小型处理器。二是使用FPGA加速的快速证书验证，可以用于应用的服务器端。</p>
+<p>文献中涉及的一些算法内容：</p>
+<h3 id="GLV方法-使用自同态"><a href="#GLV方法-使用自同态" class="headerlink" title="GLV方法(使用自同态)"></a>GLV方法(使用自同态)</h3><p>$E$为椭圆曲线，有限域$F_p$</p>
+<p>$G\in E(F_p)$素数阶为$r$</p>
+<p>假设$E$存在一个计算高效的自同态$\phi$，$\phi(G)&#x3D;\lambda\cdot G\in\langle G\rangle$ </p>
+<p>对于特殊的曲线，$\phi$是已知的，且可以通过一些特性快速计算</p>
+<p>可以将$k\cdot G$的计算变为$k_1\cdot G+k_2\cdot \phi(G)$的形式，其中$k_1$&amp;$k_2$只有原来$k$长度的一半左右。这两个标量乘法可以通过Shamir’s trick同时计算。</p>
+<h3 id="本文的样例曲线"><a href="#本文的样例曲线" class="headerlink" title="本文的样例曲线"></a>本文的样例曲线</h3><p>本文通过CM判别式和一些性能因素，选择了曲线<br>$$<br>E_{-1,1}&#x2F;F_p:-x^2+y^2&#x3D;1+x^2y^2<br>$$<br>$p&#x3D;2^207-5131$</p>
+<p>$E_{-1,1}$有一个高效的自同态<br>$$<br>\phi_t(x,y)&#x3D;(\alpha\cdot x,1&#x2F;y)<br>$$<br>$\alpha&#x3D;0x5135DD9F4EBC5D1835EFB3D377F3A4A1FCB<br>1E2DEC2911FF2B59A$</p>
+<p>$\phi_t(G)&#x3D;\lambda\cdot G$中$\lambda&#x3D;A1D776BEDB1ECFFCE5ABB8F12F8223CC0F494D461EC0<br>F724D06$</p>
+<h2 id="计算双标量乘法的加速方法"><a href="#计算双标量乘法的加速方法" class="headerlink" title="计算双标量乘法的加速方法(*)"></a>计算双标量乘法的加速方法(*)</h2><p>目标：计算出$k\cdot G+l\cdot Q$，同时降低计算时间（得到具体表达式后的计算时间，也可以用点加点乘的次数表示）和空间（主要指事先计算的内容量）</p>
+<h3 id="两个单标量乘法"><a href="#两个单标量乘法" class="headerlink" title="两个单标量乘法"></a>两个单标量乘法</h3><p>最简单直接的方法，分别计算两个标量乘法</p>
+<p>其中$k\cdot G$计算比较简单，$G$是固定且提前知道的，可以通过fixed-base comb method[12,algorithm3.44]计算</p>
+<p>由于$G$是固定的，所以我们可以花更多时间在事先计算上，以使得验证时计算$k\cdot G$的时间更短</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/alg3.44.png" alt="alg3.44"></p>
+<p>$t$是$k$的长度，$w$是window的宽度，$d&#x3D;\lceil t&#x2F;w\rceil$，将$k$分为$w$个比特串，每个串的长度都为$d$</p>
+<p>表示为<br>$$<br>k&#x3D;k^{w-1}||\cdots||k^1||k^0<br>$$<br>为了加速计算，点<br>$$<br>[a_{w-1},\cdots,a_2,a_1,a_0]P&#x3D;a_{w-1}2^{(w-1)d}P+\cdots+a_22^{2d}P+a_12^dP+a_0P<br>$$<br>对于所有可能的比特串$[a_{w-1},\cdots,a_2,a_1,a_0]$都要事先计算好。届时根据实际$k$的值以及分为$w$个比特串后分别的值，在事先计算好的点集中寻找对应点。</p>
+<p>第二部分$l\cdot Q$的计算使用到了binary method(类似快速幂)</p>
+<p>由于$Q$可能是群内的任意点，所以无法进行事先计算</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/alg3.26.png" alt="alg3.26"></p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/alg3.27.png" alt="alg3.27"></p>
+<h3 id="Interleaving-Method"><a href="#Interleaving-Method" class="headerlink" title="Interleaving Method"></a>Interleaving Method</h3><p>Shamir’s trick：给定宽度$w$，计算出对于所有$0\le i,j&lt;2^w$的$i\cdot P+j\cdot Q$</p>
+<p>在$d&#x3D;\lceil t&#x2F;w\rceil$个步骤中每一步，累加器乘上$2^w$再加上，window中$k_i$和$l_i$值对应在表中（事先计算好得到的一个表）的$i\cdot P+j\cdot Q$的值</p>
+<p>![interleaving method示意图](..&#x2F;images&#x2F;ECDSA及加速方法介绍&#x2F;interleaving method示意图.png)</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/alg3.48.png" alt="alg3.48"></p>
+<p>特别地，本文中的Interleaving Method是将$w$固定为1，所以方法简化为</p>
+<p>首先计算出$S&#x3D;G+Q$</p>
+<p>然后从低位开始一位一位搜索比特，如果$k_i&#x3D;1$，$l_i&#x3D;0$，那么对应该位$+G$，如果$k_i&#x3D;0$ ，$l_i&#x3D;1$，对应该位$+Q$,如果$k_i&#x3D;l_i&#x3D;1$，对应该位$+S$</p>
+<h3 id="Joint-Sparse-Form"><a href="#Joint-Sparse-Form" class="headerlink" title="Joint Sparse Form"></a>Joint Sparse Form</h3><p>与上面的方法相似，不同的是，该JSF方法先将$k$和$l$用带符号的二进制表示，以最小化joint Hamming weight。JSF表达形式与前面的表示方式类似，优势在于全为0的列（也就是该位上的$k_i&#x3D;l_i&#x3D;0$）数量更多。</p>
+<p>需要提前计算$S&#x3D;G+Q$&amp;$T&#x3D;G-Q$，因此提前计算量会比Interleaving Method大。</p>
+<p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/alg3.50.png" alt="alg3.50"></p>
+<h3 id="Window-Method"><a href="#Window-Method" class="headerlink" title="Window Method"></a>Window Method</h3><p>在Shamir’s trick中提到的方法，更类似于一个划分方法，一般是与其他方法结合使用(alg3.44中的window)。本文中，Interleaving Method和Joint Sparse Form都可以看做是window宽度为1的方法。</p>
+<h3 id="Double-Scalar-Multiplication-with-Endomorphism"><a href="#Double-Scalar-Multiplication-with-Endomorphism" class="headerlink" title="Double Scalar Multiplication with Endomorphism"></a>Double Scalar Multiplication with Endomorphism</h3><p>本文主要研究的方法。结合了自同态，查表，交叉计算的方法（还可以结合window的方法，但理论分析后结合window方法不如不结合的方法）</p>
+<p>Algorithm3.74是一个用于分解$k$为$k_1,k_2$使得$k&#x3D;k_1+k_2\lambda\ mod\ n$ and $|k_1|,|k_2| \approx\sqrt{n}$</p>
+<p>然后通过Montgomery’s trick计算点$\phi(G)$&amp;$\phi(Q)$（由于曲线和其自同态的特殊性，该计算非常快捷）</p>
+<p>生成15个点的查找表，该表包括$\phi(Q)$、$Q$、$\phi(G)$、$G$的所有组合形式</p>
+<p>最后以交叉的形式计算$k_1\cdot G+k_2\cdot\phi(G)+l_1\cdot Q+l_2\cdot\phi(Q)$</p>
+<p>具体就是写成二进制形式，从高到低遍历每一位，然后累加器先乘2，再根据该位(可以看做是window框柱的一列)中4个元素的该位值，在表中查找相应的点，累加器加上该点。</p>
+<img src="../images/ECDSA及加速方法介绍/alg1.png" alt="alg1" style="zoom:67%;" />
 
 
 
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2023/04/11/hello-world/" class="article-date">
-  	<time datetime="2023-04-11T11:14:31.952Z" itemprop="datePublished">2023-04-11</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2023/04/11/hello-world/">
-        Hello World
-        
-      </a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h3 id="上述方法表现比较"><a href="#上述方法表现比较" class="headerlink" title="上述方法表现比较"></a>上述方法表现比较</h3><p><img src="/../images/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/%E8%A1%A8%E7%8E%B0%E6%AF%94%E8%BE%83.png" alt="表现比较"></p>
+<p>考虑到本文研究的场景主要是为资源受限的iot设备涉及加速方法，所以根据表现和RAM需求，方法(d)是最适合用于加速双标量乘法的方法。</p>
+<p><a href="../pdf/ECDSA%E5%8F%8A%E5%8A%A0%E9%80%9F%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D/GuideEllipticCurveCryptography-with-cover-page-v2.pdf">Guide Elliptic Curve Cryptography</a></p>
 
       
     </div>
